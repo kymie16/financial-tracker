@@ -1,0 +1,135 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
+    // IDEA ASAS UNTUK SIMPAN DATA
+    struct Transaction {
+        string category;
+        double amount;
+        string type; // "Income" or "Expense"
+    };
+
+    // Function prototypes
+    void addTransaction(vector<Transaction>& transactions, const string& type);
+    void displayTransactions(const vector<Transaction>& transactions);
+    void generateSummary(const vector<Transaction>& transactions);
+
+    int main()
+    {
+        vector<Transaction> transactions;
+        int choice;
+
+        do
+        {
+            // MENU UTAMA
+            cout << "\n=== Personal Budget Tracker ===" << endl;
+            cout << "1. Add Income" << endl;
+            cout << "2. Add Expense" << endl;
+            cout << "3. View Transactions" << endl;
+            cout << "4. Generate Summary" << endl;
+            cout << "5. Exit" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
+
+            switch (choice)
+            {
+                case 1:
+                    addTransaction(transactions, "Income");
+                    break;
+                case 2:
+                    addTransaction(transactions, "Expense");
+                    break;
+                case 3:
+                    displayTransactions(transactions);
+                    break;
+                case 4:
+                    generateSummary(transactions);
+                    break;
+                case 5:
+                    cout << "Exiting the program. Goodbye!" << endl;
+                    break;
+                default:
+                    cout << "Invalid choice. Please try again." << endl;
+            }
+
+        }
+            while (choice != 5);
+
+        return 0;
+    }
+
+    // PENAMBAHAN TRANSASI
+    void addTransaction(vector<Transaction>& transactions, const string& type)
+    {
+        Transaction t;
+        t.type = type;
+
+        cout << "Enter category (e.g., Food, Rent, Utilities): ";
+        cin.ignore();
+        getline(cin, t.category);
+
+        cout << "Enter amount:RM ";
+        cin >> t.amount;
+
+        if (type == "Expense" && t.amount > 0)
+        {
+            t.amount = -t.amount; // PENGELUARAN MESTI MENYEBABKAN ADA PENOLAKKAN
+        }
+
+        transactions.push_back(t);
+        cout << type << " added successfully!" << endl;
+    }
+
+    // PAPARAN TRANSASI
+    void displayTransactions(const vector<Transaction>& transactions)
+    {
+        if (transactions.empty())
+        {
+            cout << "No transactions to display." << endl;
+            return;
+        }
+
+        cout << "\n=== Transactions ===" << endl;
+        cout << left << setw(15) << "Category" << setw(10) << "Type" << setw(10) << "Amount" << endl;
+        cout << "---------------------------------" << endl;
+
+        for (const auto& t : transactions)
+        {
+            cout << left << setw(15) << t.category
+                << setw(10) << t.type
+                << setw(10) << fixed << setprecision(2) << t.amount << endl;
+        }
+    }
+
+    // UNTUK KUMPULKAN SEMUA TRANSASI
+    void generateSummary(const vector<Transaction>& transactions)
+    {
+        if (transactions.empty())
+        {
+            cout << "No transactions to summarize." << endl;
+            return;
+        }
+
+        double totalIncome = 0, totalExpense = 0;
+
+        for (const auto& t : transactions)
+        {
+            if (t.type == "Income")
+            {
+                totalIncome += t.amount;
+            } else if (t.type == "Expense")
+            {
+                totalExpense += t.amount;
+            }
+        }
+
+        double balance = totalIncome + totalExpense;
+
+        cout << "\n=== Financial Summary ===" << endl;
+        cout << "Total Income: RM" << fixed << setprecision(2) << totalIncome << endl;
+        cout << "Total Expenses: RM" << fixed << setprecision(2) << -totalExpense << endl;
+        cout << "Net Balance: RM" << fixed << setprecision(2) << balance << endl;
+    }
